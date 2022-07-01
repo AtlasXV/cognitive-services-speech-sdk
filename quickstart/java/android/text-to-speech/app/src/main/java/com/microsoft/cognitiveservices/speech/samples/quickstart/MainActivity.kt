@@ -5,22 +5,20 @@
 // <code>
 package com.microsoft.cognitiveservices.speech.samples.quickstart
 
-import androidx.appcompat.app.AppCompatActivity
-import com.microsoft.cognitiveservices.speech.SpeechConfig
-import com.microsoft.cognitiveservices.speech.SpeechSynthesizer
-import android.os.Bundle
-import com.microsoft.cognitiveservices.speech.samples.quickstart.R
-import androidx.core.app.ActivityCompat
 import android.Manifest.permission
+import android.os.Bundle
 import android.util.Log
 import android.view.View
-import com.microsoft.cognitiveservices.speech.samples.quickstart.MainActivity
-import android.widget.TextView
 import android.widget.EditText
-import com.microsoft.cognitiveservices.speech.SpeechSynthesisResult
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import com.microsoft.cognitiveservices.speech.ResultReason
+import com.microsoft.cognitiveservices.speech.SpeechConfig
 import com.microsoft.cognitiveservices.speech.SpeechSynthesisCancellationDetails
-import java.lang.Exception
+import com.microsoft.cognitiveservices.speech.SpeechSynthesizer
+import com.microsoft.cognitiveservices.speech.audio.AudioConfig
+import java.io.File
 
 class MainActivity : AppCompatActivity() {
     private var speechConfig: SpeechConfig? = null
@@ -38,9 +36,16 @@ class MainActivity : AppCompatActivity() {
         )
 
         // Initialize speech synthesizer and its dependencies
-        speechConfig = SpeechConfig.fromSubscription(speechSubscriptionKey, serviceRegion)
+        speechConfig = SpeechConfig.fromSubscription(speechSubscriptionKey, serviceRegion).apply {
+//            speechSynthesisVoiceName = "zh-CN-XiaomoNeural"
+//            speechSynthesisVoiceName = "zh-CN-XiaoshuangNeural"
+            speechSynthesisVoiceName = "zh-CN-YunxiNeural"
+        }
         assert(speechConfig != null)
-        synthesizer = SpeechSynthesizer(speechConfig)
+        val destFile =
+            File(getExternalFilesDir("text-to-speech"), "test-${System.currentTimeMillis()}.wav")
+        synthesizer =
+            SpeechSynthesizer(speechConfig, AudioConfig.fromWavFileInput(destFile.absolutePath))
         assert(synthesizer != null)
     }
 

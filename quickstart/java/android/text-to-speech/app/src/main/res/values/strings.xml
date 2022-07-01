@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Quickstart</string>
+<!--    <string name="text_to_speed">Hi there!</string>-->
+    <string name="text_to_speed">君不见，黄河之水天上来，奔流到海不复回</string>
 </resources>
