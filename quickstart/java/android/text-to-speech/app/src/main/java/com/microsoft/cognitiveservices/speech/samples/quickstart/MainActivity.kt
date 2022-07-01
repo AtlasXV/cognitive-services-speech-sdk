@@ -18,6 +18,9 @@ import com.microsoft.cognitiveservices.speech.SpeechConfig
 import com.microsoft.cognitiveservices.speech.SpeechSynthesisCancellationDetails
 import com.microsoft.cognitiveservices.speech.SpeechSynthesizer
 import com.microsoft.cognitiveservices.speech.audio.AudioConfig
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
@@ -39,13 +42,33 @@ class MainActivity : AppCompatActivity() {
         speechConfig = SpeechConfig.fromSubscription(speechSubscriptionKey, serviceRegion).apply {
 //            speechSynthesisVoiceName = "zh-CN-XiaomoNeural"
 //            speechSynthesisVoiceName = "zh-CN-XiaoshuangNeural"
-            speechSynthesisVoiceName = "zh-CN-YunxiNeural"
+//            speechSynthesisVoiceName = "zh-CN-YunxiNeural"
+            speechSynthesisVoiceName = "zh-TW-HsiaoYuNeural"
         }
         assert(speechConfig != null)
         val destFile =
-            File(getExternalFilesDir("text-to-speech"), "test-${System.currentTimeMillis()}.wav")
+            File(
+                getExternalFilesDir("text-to-speech"),
+                "${speechConfig?.speechSynthesisVoiceName}-${System.currentTimeMillis()}.wav"
+            )
         synthesizer =
             SpeechSynthesizer(speechConfig, AudioConfig.fromWavFileInput(destFile.absolutePath))
+
+        GlobalScope.launch(Dispatchers.IO) {
+            val result = synthesizer?.voicesAsync?.get()
+            Log.d("Voice-info", "size=${result?.voices?.size}")
+            result?.voices?.forEachIndexed { index, it ->
+                Log.d(
+                    "Voice-info",
+                    "[${index}]name=${it.name}," +
+                            "shortName=${it.shortName}," +
+                            "localName=${it.localName}," +
+                            "gender=${it.gender.name}," +
+                            "voiceType=${it.voiceType.name}"
+                )
+            }
+        }
+
         assert(synthesizer != null)
     }
 
