@@ -16,4 +16,9 @@ fun Project.getCustomProperties(fileName: String): Properties? {
     return properties
 }
 
+/**
+ * [根据文档获取语音资源的秘钥](https://learn.microsoft.com/zh-cn/azure/cognitive-services/speech-service/get-started-text-to-speech?tabs=macos%2Cterminal&pivots=programming-language-java#set-environment-variables)
+ *
+ * [个人主页可以查询](https://portal.azure.com/#home)
+ **/
 val Project.subscriptionKey get() = findProperty("MICROSOFT_SPEECH_KEY")?.toString()!!

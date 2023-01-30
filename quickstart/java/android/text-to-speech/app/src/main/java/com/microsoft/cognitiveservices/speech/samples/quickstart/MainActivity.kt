@@ -23,6 +23,9 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.File
 
+/**
+ * [如何基于文本合成语音](https://learn.microsoft.com/zh-cn/azure/cognitive-services/speech-service/how-to-speech-synthesis?tabs=browserjs%2Cterminal&pivots=programming-language-java)
+ */
 class MainActivity : AppCompatActivity() {
     private var speechConfig: SpeechConfig? = null
     private var synthesizer: SpeechSynthesizer? = null
