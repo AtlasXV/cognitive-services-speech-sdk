@@ -13,15 +13,14 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import com.microsoft.cognitiveservices.speech.ResultReason
-import com.microsoft.cognitiveservices.speech.SpeechConfig
-import com.microsoft.cognitiveservices.speech.SpeechSynthesisCancellationDetails
-import com.microsoft.cognitiveservices.speech.SpeechSynthesizer
+import com.microsoft.cognitiveservices.speech.*
 import com.microsoft.cognitiveservices.speech.audio.AudioConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.File
+import java.util.concurrent.Future
+
 
 /**
  * [如何基于文本合成语音](https://learn.microsoft.com/zh-cn/azure/cognitive-services/speech-service/how-to-speech-synthesis?tabs=browserjs%2Cterminal&pivots=programming-language-java)
@@ -29,6 +28,7 @@ import java.io.File
 class MainActivity : AppCompatActivity() {
     private var speechConfig: SpeechConfig? = null
     private var synthesizer: SpeechSynthesizer? = null
+    private var audioFile: File? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -49,13 +49,13 @@ class MainActivity : AppCompatActivity() {
             speechSynthesisVoiceName = "zh-TW-HsiaoYuNeural"
         }
         assert(speechConfig != null)
-        val destFile =
+        audioFile =
             File(
                 getExternalFilesDir("text-to-speech"),
                 "${speechConfig?.speechSynthesisVoiceName}-${System.currentTimeMillis()}.wav"
             )
         synthesizer =
-            SpeechSynthesizer(speechConfig, AudioConfig.fromWavFileInput(destFile.absolutePath))
+            SpeechSynthesizer(speechConfig, AudioConfig.fromWavFileInput(audioFile!!.absolutePath))
 
         GlobalScope.launch(Dispatchers.IO) {
             val result = synthesizer?.voicesAsync?.get()
@@ -99,10 +99,28 @@ class MainActivity : AppCompatActivity() {
                         System.lineSeparator() + "Did you update the subscription info?"
             }
             result.close()
+            audioToText()
         } catch (ex: Exception) {
             Log.e("SpeechSDKDemo", "unexpected " + ex.message)
             assert(false)
         }
+    }
+
+    /**
+     * [从文件中识别语音](https://learn.microsoft.com/zh-cn/azure/cognitive-services/speech-service/how-to-recognize-speech?pivots=programming-language-java#recognize-speech-from-a-file)
+     */
+    private fun audioToText() {
+        GlobalScope.launch(Dispatchers.IO) {
+            Log.d("SpeechSDKDemo", "Recognizing Text from file: $audioFile")
+            val audioConfig = AudioConfig.fromWavFileInput(audioFile!!.absolutePath)
+            val config = SpeechConfig.fromSubscription(speechSubscriptionKey, serviceRegion)
+            config.speechRecognitionLanguage = "zh-CN"
+            val recognizer = SpeechRecognizer(config, audioConfig)
+            val task: Future<SpeechRecognitionResult> = recognizer.recognizeOnceAsync()
+            val result: SpeechRecognitionResult = task.get()
+            Log.d("SpeechSDKDemo", "RECOGNIZED: Text=" + result.text)
+        }
+
     }
 
     companion object {
