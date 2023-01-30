@@ -4,8 +4,7 @@
 //
 package com.microsoft.cognitiveservices.speech.samples.speechsynthesis;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
+import static android.Manifest.permission.INTERNET;
 
 import android.graphics.Color;
 import android.media.AudioAttributes;
@@ -21,6 +20,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+
 import com.microsoft.cognitiveservices.speech.AudioDataStream;
 import com.microsoft.cognitiveservices.speech.Connection;
 import com.microsoft.cognitiveservices.speech.PropertyId;
@@ -34,14 +36,12 @@ import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static android.Manifest.permission.INTERNET;
-
 public class MainActivity extends AppCompatActivity {
 
     // Replace below with your own subscription key
-    private static String speechSubscriptionKey = "YourSubscriptionKey";
+    private static String speechSubscriptionKey = BuildConfig.SUBSCRIPTION_KEY;
     // Replace below with your own service region (e.g., "westus").
-    private static String serviceRegion = "YourServiceRegion";
+    private static String serviceRegion = "eastus";
 
     private SpeechConfig speechConfig;
     private SpeechSynthesizer synthesizer;
