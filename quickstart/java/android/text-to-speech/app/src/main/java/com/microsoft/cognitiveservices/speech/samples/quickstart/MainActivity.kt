@@ -6,6 +6,7 @@
 package com.microsoft.cognitiveservices.speech.samples.quickstart
 
 import android.Manifest.permission
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -13,8 +14,12 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import com.atlasv.android.tts.TtsConfig
+import com.atlasv.android.tts.TtsInitializer
 import com.microsoft.cognitiveservices.speech.*
 import com.microsoft.cognitiveservices.speech.audio.AudioConfig
+import com.microsoft.cognitiveservices.speech.samples.quickstart.config.ConfigConstants.SERVICE_REGION
+import com.microsoft.cognitiveservices.speech.samples.quickstart.config.ConfigConstants.SPEECH_SUBSCRIPTION_KEY
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -31,6 +36,11 @@ class MainActivity : AppCompatActivity() {
     private var audioFile: File? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        TtsInitializer.initSdk(
+            config = TtsConfig(BuildConfig.SUBSCRIPTION_KEY, "eastus")
+        )
+
         setContentView(R.layout.activity_main)
 
         // Note: we need to request the permissions
@@ -42,12 +52,13 @@ class MainActivity : AppCompatActivity() {
         )
 
         // Initialize speech synthesizer and its dependencies
-        speechConfig = SpeechConfig.fromSubscription(speechSubscriptionKey, serviceRegion).apply {
+        speechConfig =
+            SpeechConfig.fromSubscription(SPEECH_SUBSCRIPTION_KEY, SERVICE_REGION).apply {
 //            speechSynthesisVoiceName = "zh-CN-XiaomoNeural"
 //            speechSynthesisVoiceName = "zh-CN-XiaoshuangNeural"
 //            speechSynthesisVoiceName = "zh-CN-YunxiNeural"
-            speechSynthesisVoiceName = "zh-TW-HsiaoYuNeural"
-        }
+                speechSynthesisVoiceName = "zh-TW-HsiaoYuNeural"
+            }
         assert(speechConfig != null)
         audioFile =
             File(
@@ -57,21 +68,9 @@ class MainActivity : AppCompatActivity() {
         synthesizer =
             SpeechSynthesizer(speechConfig, AudioConfig.fromWavFileInput(audioFile!!.absolutePath))
 
-        GlobalScope.launch(Dispatchers.IO) {
-            val result = synthesizer?.voicesAsync?.get()
-            Log.d("Voice-info", "size=${result?.voices?.size}")
-            result?.voices?.forEachIndexed { index, it ->
-                Log.d(
-                    "Voice-info",
-                    "[${index}]name=${it.name}," +
-                            "shortName=${it.shortName}," +
-                            "localName=${it.localName}," +
-                            "gender=${it.gender.name}," +
-                            "voiceType=${it.voiceType.name}"
-                )
-            }
+        findViewById<View>(R.id.btn_voice_list).setOnClickListener {
+            startActivity(Intent(this, VoiceListActivity::class.java))
         }
-
         assert(synthesizer != null)
     }
 
@@ -113,7 +112,7 @@ class MainActivity : AppCompatActivity() {
         GlobalScope.launch(Dispatchers.IO) {
             Log.d("SpeechSDKDemo", "Recognizing Text from file: $audioFile")
             val audioConfig = AudioConfig.fromWavFileInput(audioFile!!.absolutePath)
-            val config = SpeechConfig.fromSubscription(speechSubscriptionKey, serviceRegion)
+            val config = SpeechConfig.fromSubscription(SPEECH_SUBSCRIPTION_KEY, SERVICE_REGION)
             config.speechRecognitionLanguage = "zh-CN"
             val recognizer = SpeechRecognizer(config, audioConfig)
             val task: Future<SpeechRecognitionResult> = recognizer.recognizeOnceAsync()
@@ -121,13 +120,5 @@ class MainActivity : AppCompatActivity() {
             Log.d("SpeechSDKDemo", "RECOGNIZED: Text=" + result.text)
         }
 
-    }
-
-    companion object {
-        // Replace below with your own subscription key
-        private const val speechSubscriptionKey = BuildConfig.SUBSCRIPTION_KEY
-
-        // Replace below with your own service region (e.g., "westus").
-        private const val serviceRegion = "eastus"
     }
 }

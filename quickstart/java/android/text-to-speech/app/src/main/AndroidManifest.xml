@@ -20,6 +20,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".VoiceListActivity"
+            android:exported="false"
+            android:label="支持的语音"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

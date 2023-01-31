@@ -19,6 +19,14 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/AtlasXV/android-libs")
+            credentials {
+                username = project.findProperty("GPR_USR")
+                password = project.findProperty("GPR_KEY")
+            }
+        }
     }
 }
 
