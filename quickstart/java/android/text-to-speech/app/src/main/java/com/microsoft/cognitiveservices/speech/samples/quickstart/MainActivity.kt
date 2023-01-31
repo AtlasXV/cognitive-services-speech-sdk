@@ -54,10 +54,9 @@ class MainActivity : AppCompatActivity() {
         // Initialize speech synthesizer and its dependencies
         speechConfig =
             SpeechConfig.fromSubscription(SPEECH_SUBSCRIPTION_KEY, SERVICE_REGION).apply {
-//            speechSynthesisVoiceName = "zh-CN-XiaomoNeural"
-//            speechSynthesisVoiceName = "zh-CN-XiaoshuangNeural"
-//            speechSynthesisVoiceName = "zh-CN-YunxiNeural"
                 speechSynthesisVoiceName = "zh-TW-HsiaoYuNeural"
+                // 以mp3格式输出。
+//                setSpeechSynthesisOutputFormat(SpeechSynthesisOutputFormat.Audio16Khz128KBitRateMonoMp3)
             }
         assert(speechConfig != null)
         audioFile =
@@ -89,7 +88,8 @@ class MainActivity : AppCompatActivity() {
             // Note: this will block the UI thread, so eventually, you want to register for the event
             val result = synthesizer!!.SpeakText(speakText.text.toString())!!
             if (result.reason == ResultReason.SynthesizingAudioCompleted) {
-                outputMessage.text = "Speech synthesis succeeded."
+                outputMessage.text =
+                    "Speech synthesis succeeded: $audioFile(${audioFile?.length()})"
             } else if (result.reason == ResultReason.Canceled) {
                 val cancellationDetails =
                     SpeechSynthesisCancellationDetails.fromResult(result).toString()
@@ -110,11 +110,20 @@ class MainActivity : AppCompatActivity() {
      */
     private fun audioToText() {
         GlobalScope.launch(Dispatchers.IO) {
-            Log.d("SpeechSDKDemo", "Recognizing Text from file: $audioFile")
+            Log.d(
+                "SpeechSDKDemo",
+                "Recognizing Text from file: $audioFile(${audioFile!!.length()})"
+            )
             val audioConfig = AudioConfig.fromWavFileInput(audioFile!!.absolutePath)
             val config = SpeechConfig.fromSubscription(SPEECH_SUBSCRIPTION_KEY, SERVICE_REGION)
             config.speechRecognitionLanguage = "zh-CN"
-            val recognizer = SpeechRecognizer(config, audioConfig)
+            val recognizer = kotlin.runCatching {
+                // 仅支持wav格式
+                SpeechRecognizer(config, audioConfig)
+            }.getOrElse {
+                Log.e("SpeechSDKDemo", "Can not create SpeechRecognizer", it)
+                null
+            } ?: return@launch
             val task: Future<SpeechRecognitionResult> = recognizer.recognizeOnceAsync()
             val result: SpeechRecognitionResult = task.get()
             Log.d("SpeechSDKDemo", "RECOGNIZED: Text=" + result.text)
