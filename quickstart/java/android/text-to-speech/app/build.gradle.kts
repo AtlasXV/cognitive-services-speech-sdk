@@ -3,6 +3,7 @@ plugins {
     id("kotlin-android")
     id("kotlin-kapt")
 }
+
 android {
     compileSdk = 33
     defaultConfig {
@@ -25,6 +26,10 @@ android {
     }
     buildFeatures {
         dataBinding = true
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.3.2"
     }
 }
 
@@ -41,4 +46,17 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.6.21")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.3")
     implementation("com.google.accompanist:accompanist-appcompat-theme:0.25.1")
+
+    val composeBom = platform("androidx.compose:compose-bom:2022.12.00")
+    implementation(composeBom)
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-tooling")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.compose.material:material")
+    implementation("androidx.compose.foundation:foundation")
+    implementation("androidx.compose.foundation:foundation-layout")
+    implementation("androidx.activity:activity-compose:1.6.1")
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+    implementation("com.google.accompanist:accompanist-themeadapter-material:0.28.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1")
 }
