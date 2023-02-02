@@ -40,4 +40,5 @@ dependencies {
     implementation("androidx.core:core-ktx:1.8.0")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.6.21")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.3")
+    implementation("com.google.accompanist:accompanist-appcompat-theme:0.25.1")
 }
