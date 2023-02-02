@@ -37,7 +37,6 @@ dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation(project(":tts"))
     implementation("androidx.appcompat:appcompat:1.6.0")
-    implementation("com.atlasv.android.mediaeditor.component:base:1.6.0")
     implementation("androidx.activity:activity-ktx:1.6.1")
     implementation("androidx.recyclerview:recyclerview:1.2.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
