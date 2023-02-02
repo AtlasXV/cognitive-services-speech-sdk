@@ -1,8 +1,11 @@
 package com.microsoft.cognitiveservices.speech.samples.quickstart.compose.voicelist
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
@@ -40,9 +43,9 @@ fun VoiceListScreen(dataList: State<List<VoiceInfoData>>) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        LazyVerticalGrid(columns = GridCells.Fixed(1)) {
-            items(count = dataList.value.size) { index ->
-                VoiceItem(dataList.value[index])
+        LazyColumn {
+            items(dataList.value) { item ->
+                VoiceItem(item)
             }
         }
     }
